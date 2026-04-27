@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Accident Risk Predictor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --red:#e63946;--orange:#f4a261;--green:#2a9d8f;--blue:#457b9d;--darker:#060606;--card:#141414;--border:#222;--text:#f0f0f0;--muted:#777; }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{background:var(--darker);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(230,57,70,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(230,57,70,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+        .container{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+        header{padding:32px 0 24px;border-bottom:1px solid var(--border);margin-bottom:28px;}
+        .header-inner{display:flex;align-items:center;gap:16px;}
+        .logo-icon{width:48px;height:48px;background:var(--red);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+        h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(26px,5vw,42px);letter-spacing:2px;line-height:1;}
+        h1 span{color:var(--red);}
+        .subtitle{font-size:13px;color:var(--muted);margin-top:4px;}
+        .nav-tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--border);}
+        .nav-tab{padding:10px 20px;background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;font-weight:500;}
+        .nav-tab.active{color:var(--red);border-bottom-color:var(--red);}
+        .nav-tab:hover{color:var(--text);}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
+        .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+        .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;text-align:center;transition:border-color 0.3s;}
+        .stat-card:hover{border-color:var(--red);}
+        .stat-number{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;}
+        .stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+        .stat-card.high .stat-number{color:var(--red);}
+        .stat-card.medium .stat-number{color:var(--orange);}
+        .stat-card.low .stat-number{color:var(--green);}
+        .stat-card.total .stat-number{color:var(--blue);}
+        .weather-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;}
+        .card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+        .weather-search{display:flex;gap:12px;margin-bottom:20px;}
+        .weather-search input{flex:1;background:#1a1a1a;border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;}
+        .weather-search input:focus{outline:none;border-color:var(--blue);}
+        .weather-btn{padding:10px 20px;background:var(--blue);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:15px;transition:background 0.2s;}
+        .weather-btn:hover{background:#1d3a4f;}
+        .weather-result{display:none;}
+        .weather-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+        .weather-item{background:#1a1a1a;border-radius:10px;padding:14px;text-align:center;}
+        .weather-item-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+        .weather-item-value{font-family:'Bebas Neue',sans-serif;font-size:22px;}
+        .auto-fill-btn{margin-top:14px;padding:10px 20px;background:var(--green);color:white;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:background 0.2s;}
+        .auto-fill-btn:hover{background:#1e7a6f;}
+        .main-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        @media(max-width:768px){.main-grid{grid-template-columns:1fr;}.stats-bar{grid-template-columns:repeat(2,1fr);}.weather-grid{grid-template-columns:repeat(2,1fr);}}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+        .form-group{display:flex;flex-direction:column;gap:6px;}
+        label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:500;}
+        input,select{background:#1a1a1a;border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color 0.2s;width:100%;-webkit-appearance:none;}
+        input:focus,select:focus{outline:none;border-color:var(--red);}
+        select option{background:#1a1a1a;}
+        .predict-btn{width:100%;margin-top:18px;padding:14px;background:var(--red);color:white;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all 0.2s;}
+        .predict-btn:hover{background:#c1121f;transform:translateY(-1px);box-shadow:0 8px 24px rgba(230,57,70,0.3);}
+        .predict-btn.loading{opacity:0.7;pointer-events:none;}
+        .result-section{display:flex;flex-direction:column;gap:20px;}
+        .risk-display{background:#1a1a1a;border-radius:12px;padding:24px;text-align:center;border:2px solid var(--border);transition:all 0.4s;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+        .risk-display.HIGH{border-color:var(--red);background:rgba(230,57,70,0.08);}
+        .risk-display.MEDIUM{border-color:var(--orange);background:rgba(244,162,97,0.08);}
+        .risk-display.LOW{border-color:var(--green);background:rgba(42,157,143,0.08);}
+        .risk-label{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
+        .risk-value{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;line-height:1;}
+        .risk-value.HIGH{color:var(--red);}
+        .risk-value.MEDIUM{color:var(--orange);}
+        .risk-value.LOW{color:var(--green);}
+        .risk-emoji{font-size:28px;margin-top:8px;}
+        .prob-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px;}
+        .prob-bar-wrap{margin-bottom:10px;}
+        .prob-bar-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;}
+        .prob-bar-label span:first-child{color:var(--muted);}
+        .prob-bar-label span:last-child{font-weight:600;}
+        .prob-bar-bg{background:#222;border-radius:4px;height:8px;overflow:hidden;}
+        .prob-bar-fill{height:100%;border-radius:4px;transition:width 0.8s ease;width:0;}
+        .prob-bar-fill.HIGH{background:var(--red);}
+        .prob-bar-fill.MEDIUM{background:var(--orange);}
+        .prob-bar-fill.LOW{background:var(--green);}
+        .tips-section{background:#1a1a1a;border-radius:12px;padding:16px;border:1px solid var(--border);}
+        .tips-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
+        .tip-item{font-size:13px;color:#ccc;padding:6px 0;border-bottom:1px solid #1f1f1f;line-height:1.5;}
+        .tip-item:last-child{border-bottom:none;}
+        .placeholder{text-align:center;color:var(--muted);padding:20px 0;}
+        .placeholder-icon{font-size:40px;margin-bottom:10px;}
+        .placeholder p{font-size:13px;}
+        .map-card{margin-top:0;}
+        .map-container{border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+        .map-container iframe{width:100%;height:500px;border:none;display:block;}
+        .load-map-btn{padding:12px 24px;background:var(--blue);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;transition:background 0.2s;margin-bottom:16px;}
+        .load-map-btn:hover{background:#1d3a4f;}
+        .map-legend{margin-top:16px;display:flex;gap:20px;font-size:13px;}
+        .analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+        @media(max-width:768px){.analytics-grid{grid-template-columns:1fr;}}
+        @keyframes spin{to{transform:rotate(360deg);}}
+        .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+        .fade-in{animation:fadeUp 0.4s ease forwards;}
+        .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px;}
+        .badge.real{background:rgba(42,157,143,0.2);color:var(--green);border:1px solid var(--green);}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-inner">
+            <div class="logo-icon">🚗</div>
+            <div>
+                <h1>Road Accident <span>Risk</span> Predictor</h1>
+                <p class="subtitle">AI-Powered Road Safety System | Live Weather API | Real Government Data (NCRB 2017)</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('predictor',this)">🔍 Risk Predictor</button>
+        <button class="nav-tab" onclick="switchTab('map',this)">🗺️ Accident Map</button>
+        <button class="nav-tab" onclick="switchTab('analytics',this)">📈 Analytics</button>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-card total"><div class="stat-number" id="totalCount">—</div><div class="stat-label">Total Deaths (2017)</div></div>
+        <div class="stat-card high"><div class="stat-number" id="highCount">—</div><div class="stat-label">High Risk States</div></div>
+        <div class="stat-card medium"><div class="stat-number" id="medCount">—</div><div class="stat-label">Medium Risk States</div></div>
+        <div class="stat-card low"><div class="stat-number" id="lowCount">—</div><div class="stat-label">Low Risk States</div></div>
+    </div>
+
+    <!-- PREDICTOR TAB -->
+    <div class="tab-content active" id="tab-predictor">
+        <div class="weather-card">
+            <div class="card-title">🌤️ Live Weather <span class="badge real">REAL API</span></div>
+            <div class="weather-search">
+                <input type="text" id="cityInput" placeholder="Enter city (e.g. Patna, Delhi, Mumbai)" value="Patna">
+                <button class="weather-btn" onclick="fetchWeather()" id="weatherBtn">GET WEATHER</button>
+            </div>
+            <div class="weather-result" id="weatherResult">
+                <div class="weather-grid">
+                    <div class="weather-item"><div class="weather-item-label">Condition</div><div class="weather-item-value" id="wCondition">—</div></div>
+                    <div class="weather-item"><div class="weather-item-label">Temperature</div><div class="weather-item-value" id="wTemp">—</div></div>
+                    <div class="weather-item"><div class="weather-item-label">Humidity</div><div class="weather-item-value" id="wHumidity">—</div></div>
+                    <div class="weather-item"><div class="weather-item-label">Wind Speed</div><div class="weather-item-value" id="wWind">—</div></div>
+                    <div class="weather-item"><div class="weather-item-label">Visibility</div><div class="weather-item-value" id="wVisibility">—</div></div>
+                </div>
+                <button class="auto-fill-btn" onclick="autoFill()">⚡ Auto-Fill Form with Weather Data</button>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-title">🔍 Enter Driving Conditions</div>
+                <div class="form-grid">
+                    <div class="form-group"><label>Driver Age</label><input type="number" id="age" value="28" min="16" max="80"></div>
+                    <div class="form-group"><label>Speed (km/h)</label><input type="number" id="speed" value="65" min="0" max="200"></div>
+                    <div class="form-group"><label>Weather</label>
+                        <select id="weather"><option>Clear</option><option>Rainy</option><option>Foggy</option><option>Cloudy</option></select></div>
+                    <div class="form-group"><label>Road Type</label>
+                        <select id="road_type"><option>Highway</option><option>City</option><option>Rural</option></select></div>
+                    <div class="form-group"><label>Time of Day</label>
+                        <select id="time_of_day"><option>Day</option><option>Evening</option><option>Night</option></select></div>
+                    <div class="form-group"><label>Alcohol</label>
+                        <select id="alcohol"><option>No</option><option>Yes</option></select></div>
+                    <div class="form-group"><label>Visibility</label>
+                        <select id="visibility"><option>High</option><option>Medium</option><option>Low</option><option>Very Low</option></select></div>
+                    <div class="form-group"><label>Road Condition</label>
+                        <select id="road_condition"><option>Dry</option><option>Wet</option><option>Icy</option></select></div>
+                </div>
+                <button class="predict-btn" onclick="predict()" id="predictBtn">PREDICT RISK</button>
+            </div>
+
+            <div class="card result-section">
+                <div class="card-title">📊 Prediction Result</div>
+                <div class="risk-display" id="riskDisplay">
+                    <div class="placeholder"><div class="placeholder-icon">🛡️</div><p>Fill the form and click<br>Predict Risk to see results</p></div>
+                </div>
+                <div id="probSection" style="display:none">
+                    <div class="prob-title">Risk Probability Breakdown</div>
+                    <div class="prob-bar-wrap">
+                        <div class="prob-bar-label"><span>High Risk</span><span id="highProb" style="color:var(--red)">0%</span></div>
+                        <div class="prob-bar-bg"><div class="prob-bar-fill HIGH" id="highBar"></div></div>
+                    </div>
+                    <div class="prob-bar-wrap">
+                        <div class="prob-bar-label"><span>Medium Risk</span><span id="medProb" style="color:var(--orange)">0%</span></div>
+                        <div class="prob-bar-bg"><div class="prob-bar-fill MEDIUM" id="medBar"></div></div>
+                    </div>
+                    <div class="prob-bar-wrap">
+                        <div class="prob-bar-label"><span>Low Risk</span><span id="lowProb" style="color:var(--green)">0%</span></div>
+                        <div class="prob-bar-bg"><div class="prob-bar-fill LOW" id="lowBar"></div></div>
+                    </div>
+                </div>
+                <div class="tips-section" id="tipsSection" style="display:none">
+                    <div class="tips-title">⚡ Safety Recommendations</div>
+                    <div id="tipsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAP TAB -->
+    <div class="tab-content" id="tab-map">
+        <div class="card map-card">
+            <div class="card-title">🗺️ India Accident Risk Map <span class="badge real">REAL DATA</span></div>
+            <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">State-wise road accident deaths — NCRB Government Data 2017</p>
+            <button class="load-map-btn" onclick="loadMap()" id="mapBtn">🗺️ LOAD INTERACTIVE MAP</button>
+            <div class="map-container" id="mapContainer" style="display:none">
+                <iframe id="mapFrame" src=""></iframe>
+            </div>
+            <div class="map-legend">
+                <span>🔴 <span style="color:var(--red)">High Risk State</span></span>
+                <span>🟡 <span style="color:var(--orange)">Medium Risk State</span></span>
+                <span>🟢 <span style="color:var(--green)">Low Risk State</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="tab-content" id="tab-analytics">
+        <div class="analytics-grid">
+            <div class="card">
+                <div class="card-title">📈 Yearly Deaths Trend <span class="badge real">REAL</span></div>
+                <canvas id="trendChart" height="120"></canvas>
+            </div>
+            <div class="card">
+                <div class="card-title">🥧 Risk Distribution</div>
+                <canvas id="pieChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let weatherData = null;
+let chartsInit = false;
+
+function switchTab(tab, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    el.classList.add('active');
+    if (tab === 'analytics' && !chartsInit) initCharts();
+}
+
+fetch('/stats').then(r => r.json()).then(data => {
+    document.getElementById('totalCount').textContent = Number(data.total_predictions).toLocaleString();
+    document.getElementById('highCount').textContent = data.high_risk;
+    document.getElementById('medCount').textContent = data.medium_risk;
+    document.getElementById('lowCount').textContent = data.low_risk;
+});
+
+function initCharts() {
+    fetch('/stats').then(r => r.json()).then(data => {
+        const ctx1 = document.getElementById('trendChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: data.months,
+                datasets: [{ label: 'Deaths', data: data.monthly_data,
+                    backgroundColor: ['#457b9d','#f4a261','#e63946','#c1121f'],
+                    borderRadius: 6 }]
+            },
+            options: { responsive: true,
+                plugins: { legend: { labels: { color: '#aaa' } } },
+                scales: { x: { ticks: { color: '#666' }, grid: { color: '#1a1a1a' } },
+                         y: { ticks: { color: '#666' }, grid: { color: '#1a1a1a' } } }
+            }
+        });
+        const ctx2 = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['High Risk States', 'Medium Risk States', 'Low Risk States'],
+                datasets: [{ data: [data.high_risk, data.medium_risk, data.low_risk],
+                    backgroundColor: ['#e63946', '#f4a261', '#2a9d8f'], borderWidth: 0 }]
+            },
+            options: { responsive: true,
+                plugins: { legend: { labels: { color: '#aaa' }, position: 'bottom' } }
+            }
+        });
+        chartsInit = true;
+    });
+}
+
+async function fetchWeather() {
+    const city = document.getElementById('cityInput').value || 'Patna';
+    const btn = document.getElementById('weatherBtn');
+    btn.textContent = 'LOADING...'; btn.disabled = true;
+    const res = await fetch('/weather', { method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ city }) });
+    const data = await res.json();
+    if (data.success) {
+        weatherData = data;
+        document.getElementById('wCondition').textContent = data.weather;
+        document.getElementById('wTemp').textContent = data.temp + '°C';
+        document.getElementById('wHumidity').textContent = data.humidity + '%';
+        document.getElementById('wWind').textContent = data.wind + ' m/s';
+        document.getElementById('wVisibility').textContent = data.visibility;
+        document.getElementById('weatherResult').style.display = 'block';
+    } else {
+        alert('Weather API activating... Try again in few minutes!');
+    }
+    btn.textContent = 'GET WEATHER'; btn.disabled = false;
+}
+
+function autoFill() {
+    if (!weatherData) return;
+    document.getElementById('weather').value = weatherData.weather;
+    document.getElementById('visibility').value = weatherData.visibility;
+    if (weatherData.weather === 'Rainy' || weatherData.weather === 'Foggy')
+        document.getElementById('road_condition').value = 'Wet';
+    alert('✅ Weather data auto-filled!');
+}
+
+async function loadMap() {
+    const btn = document.getElementById('mapBtn');
+    btn.textContent = 'GENERATING MAP...'; btn.disabled = true;
+    const res = await fetch('/map');
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('mapContainer').style.display = 'block';
+        document.getElementById('mapFrame').src = '/static/map.html';
+        btn.style.display = 'none';
+    } else {
+        alert('Map error: ' + data.error);
+        btn.textContent = 'LOAD INTERACTIVE MAP'; btn.disabled = false;
+    }
+}
+
+async function predict() {
+    const btn = document.getElementById('predictBtn');
+    btn.innerHTML = '<span class="spinner"></span> ANALYZING...';
+    btn.classList.add('loading');
+    const data = {
+        age: document.getElementById('age').value,
+        speed: document.getElementById('speed').value,
+        weather: document.getElementById('weather').value,
+        road_type: document.getElementById('road_type').value,
+        time_of_day: document.getElementById('time_of_day').value,
+        alcohol: document.getElementById('alcohol').value,
+        visibility: document.getElementById('visibility').value,
+        road_condition: document.getElementById('road_condition').value,
+    };
+    try {
+        const res = await fetch('/predict', { method: 'POST',
+            headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const result = await res.json();
+        if (result.success) displayResult(result);
+        else alert('Error: ' + result.error);
+    } catch(e) { alert('Server error!'); }
+    btn.innerHTML = 'PREDICT RISK'; btn.classList.remove('loading');
+}
+
+function displayResult(result) {
+    const s = result.severity.toUpperCase();
+    const emojis = { HIGH:'🚨', MEDIUM:'⚠️', LOW:'✅' };
+    const d = document.getElementById('riskDisplay');
+    d.className = `risk-display ${s} fade-in`;
+    d.innerHTML = `<div class="risk-label">Predicted Accident Risk</div>
+        <div class="risk-value ${s}">${s} RISK</div>
+        <div class="risk-emoji">${emojis[s]}</div>`;
+    const p = result.probabilities;
+    document.getElementById('probSection').style.display = 'block';
+    document.getElementById('highProb').textContent = (p['High']||0)+'%';
+    document.getElementById('medProb').textContent = (p['Medium']||0)+'%';
+    document.getElementById('lowProb').textContent = (p['Low']||0)+'%';
+    setTimeout(() => {
+        document.getElementById('highBar').style.width = (p['High']||0)+'%';
+        document.getElementById('medBar').style.width = (p['Medium']||0)+'%';
+        document.getElementById('lowBar').style.width = (p['Low']||0)+'%';
+    }, 100);
+    document.getElementById('tipsSection').style.display = 'block';
+    document.getElementById('tipsList').innerHTML = result.tips.map(t=>`<div class="tip-item">${t}</div>`).join('');
+}
+</script>
+</body>
+</html>

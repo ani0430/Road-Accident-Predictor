@@ -1,0 +1,51 @@
+age,speed,weather,road_type,time_of_day,alcohol,visibility,road_condition,accident_severity
+25,60,Clear,Highway,Day,No,High,Dry,Low
+35,90,Rainy,City,Night,No,Low,Wet,High
+45,120,Foggy,Highway,Night,Yes,Very Low,Wet,High
+22,50,Clear,City,Day,No,High,Dry,Low
+30,80,Rainy,Rural,Evening,No,Medium,Wet,Medium
+55,70,Clear,Highway,Day,No,High,Dry,Low
+28,110,Foggy,Highway,Night,Yes,Very Low,Icy,High
+40,65,Clear,City,Day,No,High,Dry,Low
+19,95,Rainy,Rural,Night,Yes,Low,Wet,High
+33,75,Clear,Highway,Evening,No,High,Dry,Medium
+27,85,Cloudy,City,Night,No,Medium,Dry,Medium
+50,100,Rainy,Highway,Night,Yes,Low,Wet,High
+23,55,Clear,City,Day,No,High,Dry,Low
+38,90,Foggy,Rural,Night,No,Very Low,Wet,High
+42,70,Clear,Highway,Day,No,High,Dry,Low
+26,105,Rainy,Highway,Night,Yes,Low,Wet,High
+31,60,Clear,City,Day,No,High,Dry,Low
+48,80,Cloudy,Rural,Evening,No,Medium,Dry,Medium
+20,115,Foggy,Highway,Night,Yes,Very Low,Icy,High
+36,65,Clear,City,Day,No,High,Dry,Low
+29,88,Rainy,Rural,Night,No,Low,Wet,High
+44,72,Clear,Highway,Day,No,High,Dry,Low
+21,98,Foggy,City,Night,Yes,Very Low,Wet,High
+37,62,Clear,City,Day,No,High,Dry,Low
+53,92,Rainy,Highway,Night,Yes,Low,Wet,High
+24,58,Clear,Rural,Day,No,High,Dry,Low
+32,84,Cloudy,City,Evening,No,Medium,Dry,Medium
+46,108,Rainy,Highway,Night,Yes,Low,Wet,High
+18,76,Clear,City,Day,No,High,Dry,Low
+39,96,Foggy,Rural,Night,No,Very Low,Wet,High
+25,64,Clear,Highway,Day,No,High,Dry,Low
+34,102,Rainy,City,Night,Yes,Low,Wet,High
+41,68,Clear,Rural,Day,No,High,Dry,Low
+28,112,Foggy,Highway,Night,Yes,Very Low,Icy,High
+47,74,Clear,City,Day,No,High,Dry,Low
+22,86,Rainy,Rural,Evening,No,Medium,Wet,Medium
+35,94,Cloudy,Highway,Night,No,Medium,Dry,Medium
+52,78,Clear,City,Day,No,High,Dry,Low
+19,106,Rainy,Highway,Night,Yes,Low,Wet,High
+30,66,Clear,Rural,Day,No,High,Dry,Low
+43,82,Foggy,City,Night,No,Very Low,Wet,High
+26,118,Rainy,Highway,Night,Yes,Low,Wet,High
+38,70,Clear,City,Day,No,High,Dry,Low
+23,88,Cloudy,Rural,Evening,No,Medium,Dry,Medium
+49,96,Rainy,Highway,Night,Yes,Low,Wet,High
+31,62,Clear,City,Day,No,High,Dry,Low
+45,104,Foggy,Rural,Night,No,Very Low,Wet,High
+27,76,Clear,Highway,Day,No,High,Dry,Low
+36,92,Rainy,City,Night,Yes,Low,Wet,High
+42,68,Clear,Rural,Day,No,High,Dry,Low
